@@ -17,7 +17,7 @@ exports.Add = catchAsync(async (req, res, next) => {
     const index = IsFound.map((x)=>{
        if(x.Utilities.Title === req.body.UtilitiesTitle){
         found =true;
-        console.log('hit')
+        console.log('h')
        }
     })
     console.log("index", index)
