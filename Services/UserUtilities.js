@@ -17,7 +17,7 @@ exports.Add = catchAsync(async (req, res, next) => {
     const index = IsFound.map((x)=>{
        if(x.Utilities.Title === req.body.UtilitiesTitle){
         found =true;
-        console.log('h')
+        
        }
     })
     console.log("index", index)
@@ -127,9 +127,15 @@ exports.GetOne = catchAsync(async (req, res, next) => {
         const index = Data.findIndex(DataMap => DataMap.Utilities.Title === utilityMap.Title)
         console.log(index)
         if (index>-1){
-            active.push(utilityMap)
+            let missing = []
+            if (!Data[index].IsPaid) { missing.push('IsPaid')}
+            if (!Data[index].ContractExpiryDate) { missing.push('ContractExpiryDate')}
+            if (!Data[index].LastBill) { missing.push('LastBill')}
+            if (!Data[index].LOAForm) { missing.push('LOAForm')}
+            console.log(Data[index])
+            active.push({ Utilities: utilityMap, UserUtility: Data[index], Missing: missing})
         }else{
-            inaactive.push(utilityMap)
+            inaactive.push({ Utilities: utilityMap});
         }
 
     }) 
@@ -137,7 +143,7 @@ exports.GetOne = catchAsync(async (req, res, next) => {
     if (Data[0]) {
 
         return res.status(200).json({
-            success: true, message: "Utility Found for this User", active, inaactive, Data
+            success: true, message: "Utility Found for this User", active, inaactive, 
         })
 
     }
