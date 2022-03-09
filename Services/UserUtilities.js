@@ -140,17 +140,23 @@ exports.GetOne = catchAsync(async (req, res, next) => {
 
     }) 
 
-    if (Data[0]) {
+    if (active[0]) {
 
         return res.status(200).json({
             success: true, message: "Utility Found for this User", active, inaactive, 
         })
 
+    }else{
+        inaactive = Utilities;
+           return res.status(200).json({
+            success: true, message: "Utility Found for this User", active, inaactive:, 
+        })
+        
     }
-    else {
+    
         return next(new Error('No Utility Found for this User'))
 
-    }
+    
 })
 
 
