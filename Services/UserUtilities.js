@@ -149,7 +149,7 @@ exports.GetOne = catchAsync(async (req, res, next) => {
     }else{
         inaactive = Utilities;
            return res.status(200).json({
-            success: true, message: "Utility Found for this User", active, inaactive:, 
+            success: true, message: "Utility Found for this User", active, inaactive 
         })
         
     }
