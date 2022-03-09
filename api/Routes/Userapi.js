@@ -6,8 +6,6 @@ const { authenticate } = require('../Middleware/auth')
 /***************Routes************/
 
 route.post('/signup',
-    middleware.UserSignupValidation,
-    middleware.validationFunction,
     UserServices.SignUp);
 
 route.post('/login',
