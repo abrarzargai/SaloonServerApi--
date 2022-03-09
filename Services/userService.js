@@ -193,6 +193,30 @@ exports.GetAllUsers = catchAsync(async (req, res, next) => {
     }
 })
 
+//Getoneuser
+
+exports.Getoneuser = catchAsync(async (req, res, next) => {
+
+    const Data = await userModel.aggregate([
+        {
+            $match: {
+                Email: req.body.Email
+            }
+        }
+    ])
+
+    if (Data[0]) {
+
+        return res.status(200).json({
+            success: true, message: "Users Found", Data
+        })
+
+    }
+    else {
+        return next(new Error('No User Found'))
+
+    }
+})
 
 exports.AddSocialMediaAccount = catchAsync(async (req, res, next) => {
 
