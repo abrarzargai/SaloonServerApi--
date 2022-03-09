@@ -32,6 +32,9 @@ route.post('/resetpassword',
 route.get('/GetAllUsers',
     UserServices.GetAllUsers);
 
+route.post('/Getoneuser',
+    UserServices.Getoneuser);
+
 route.post('/addlink',
     middleware.AddSocialMediaAccountValidation,
     middleware.validationFunction,
