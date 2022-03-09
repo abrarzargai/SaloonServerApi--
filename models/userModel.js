@@ -13,6 +13,15 @@ const userSchema = new mongoose.Schema({
   FirstName: {
     type: String,
   },
+  DOB: {
+    type: String,
+  },
+   SupplierName: {
+    type: String,
+  },
+   City: {
+    type: String,
+  },
   LastName: {
     type: String,
   },
