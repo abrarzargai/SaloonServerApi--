@@ -19,7 +19,7 @@ route.post('/email', async (req, res, next) => {
         });
 
         var mailOptions = {
-            from: process.env.Gmail,
+            from: 'odl.saloonwizz@gmail.com',
             to: req.body.Email,
             subject: 'SaloonWiz App',
             text: `
