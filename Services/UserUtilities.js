@@ -233,10 +233,9 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
 })
 
 
-//Getone
 exports.GetAll = catchAsync(async (req, res, next) => {
 
-    const Data = await UserUtilitiesModel.aggregate([
+    const Response = await UserUtilitiesModel.aggregate([
         {
             $lookup: {
                 from: "users",       // other table name
@@ -244,13 +243,30 @@ exports.GetAll = catchAsync(async (req, res, next) => {
                 foreignField: "_id", // name of userinfo table field
                 as: "User"         // alias for userinfo table
             }
-        }
+        },
+        { $sort: { ContractExpiryDate: 1 } }
     ])
+    let Active = [];
+    let Pending = [];
+    Response.map((Data)=>{
+    let missing = []
+    if (!Data.IsPaid) { missing.push('IsPaid')}
+    if (!Data.ContractExpiryDate) { missing.push('ContractExpiryDate')}
+    if (!Data.LastBill) { missing.push('LastBill')}
+    if (!Data.LOAForm) { missing.push('LOAForm')}
     console.log("Data", Data)
-    if (Data[0]) {
+     
+    if(missing.length){
+        Data.missing = missing
+        Pending.push(Data)
+    }else{
+        Active.push(Data);
+    }
+})
 
+   if(Response[0]){
         return res.status(200).json({
-            success: true, message: "Utility Found for this User", Data
+            success: true, message: "Utility Found for this User", Active,Pending
         })
 
     }
