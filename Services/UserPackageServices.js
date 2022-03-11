@@ -42,9 +42,9 @@ exports.Add = catchAsync(async (req, res, next) => {
             text: `
             
             User {Data[0].User.FirstName} Applied for package!
-             Name : ${Data[0].User.FirstName}
-             Email : ${Data[0].User.Email}
-             ContactNumber : ${Data[0].User.ContactNumber}
+             Name : ${Data[0].User[0].FirstName || 'not available'}
+             Email : ${Data[0].User[0].Email || || 'not available'}
+             ContactNumber : ${Data[0].User[0].ContactNumber || || 'not available'}
              
              Please contact him for further Details
              
