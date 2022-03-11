@@ -250,7 +250,7 @@ exports.AddSocialMediaAccount = catchAsync(async (req, res, next) => {
           useFindAndModify: false,
         },
       );
-      console.log(filingsave);
+     
       return res.status(200).json({
         success: true,
         message: 'Social Media Account Added Successfully',
@@ -292,30 +292,35 @@ exports.UpdateSocialMediaAccount = catchAsync(async (req, res, next) => {
 })
 
 exports.DeleteSocialMediaAccount = catchAsync(async (req, res, next) => {
+  const User = await userModel.find({ Email: req.body.Email });
+  if (User[0]) {
+    console.log('req.body', req.body);
+    const index = User[0].SocialMedia.findIndex((x) => x.Title == req.body.Title);
+    console.log('index', index);
+    if (index > -1) {
+      //   User[0].SocialMedia.splice(index, 1);
+      //   await User[0].save();
+      //   let Data = User[0];
+      const Data = await userModel.findOneAndUpdate(
+        { Email: req.body.Email },
+        { $pop: { Filling: { Title: req.body.Title } } },
+        {
+          new: true,
+          useFindAndModify: false,
+        },
+      );
 
-    const User = await userModel.find({ Email: req.body.Email })
-    if (User[0]) {
-        console.log("req.body", req.body)
-        const index = User[0].SocialMedia.findIndex((x) => x.Title == req.body.Title)
-        console.log("index", index)
-        if (index > -1) {
-            User[0].SocialMedia.splice(index,1)
-            await User[0].save()
-            let Data = User[0]
-            return res.status(200).json({
-                success: true, message: "Social Media Account Deleted Successfully", Data
-            })
-        }
-        throw new Error(`Error!  No ${req.body.Title} Link added yet `);
-
-
+      return res.status(200).json({
+        success: true,
+        message: 'Social Media Account Deleted Successfully',
+        Data,
+      });
     }
-    else {
-        return next(new Error('User with this Email Not Found'))
-
-    }
-
-})
+    throw new Error(`Error!  No ${req.body.Title} Link added yet `);
+  } else {
+    return next(new Error('User with this Email Not Found'));
+  }
+});
 
 exports.AddFile = catchAsync(async (req, res, next) => {
  
