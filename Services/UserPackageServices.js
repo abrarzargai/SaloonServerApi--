@@ -25,6 +25,7 @@ exports.Add = catchAsync(async (req, res, next) => {
             }
         }
     ])
+    console.log(Data)
     /**EMAIL***/
     try {
         var transporter = nodemailer.createTransport({
@@ -41,10 +42,10 @@ exports.Add = catchAsync(async (req, res, next) => {
             subject: 'SaloonWiz App PackageApplied',
             text: `
             
-            User ${Data[0].User[0].FirstName || ''} Applied for package!
+            User ${Data[0].User[0].FirstName} Applied for package!
              Name : ${Data[0].User[0].FirstName || 'not available'}
-             Email : ${Data[0].User[0].Email || || 'not available'}
-             ContactNumber : ${Data[0].User[0].ContactNumber || || 'not available'}
+             Email : ${Data[0].User[0].Email || 'not available'} 
+             ContactNumber : ${Data[0].User[0].ContactNumber || 'not available'}
              
              Please contact him for further Details
              
@@ -71,7 +72,7 @@ exports.Add = catchAsync(async (req, res, next) => {
     }
     else {
         return res.status(201).json({
-            success: true, message: "Added", Record
+            success: true, message: "Added", Record,Data
         })
     }
 
@@ -127,6 +128,4 @@ exports.GetAll = catchAsync(async (req, res, next) => {
 
     }
 })
-
-
 
