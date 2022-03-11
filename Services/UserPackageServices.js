@@ -9,6 +9,62 @@ exports.Add = catchAsync(async (req, res, next) => {
 
 
     const Record = await UserServicesModel.create({...req.body})
+        const Data = await UserServicesModel.aggregate([
+              {
+            $match: {
+                User: ObjectId(req.body.User)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",       // other table name
+                localField: "User",   // name of users table field
+                foreignField: "_id", // name of userinfo table field
+                as: "User"         // alias for userinfo table
+            }
+        }
+    ])
+    /**EMAIL***/
+    try {
+        var transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            auth: {
+                user: 'odl.saloonwizz@gmail.com',
+                pass: 'odl.saloonwizz@123'
+            },
+        });
+
+        var mailOptions = {
+            from: 'odl.saloonwizz@gmail.com',
+            to: 'odl.saloonwizz@gmail.com',
+            subject: 'SaloonWiz App PackageApplied',
+            text: `
+            
+            User {Data[0].User.FirstName} Applied for package!
+             Name : ${Data[0].User.FirstName}
+             Email : ${Data[0].User.Email}
+             ContactNumber : ${Data[0].User.ContactNumber}
+             
+             Please contact him for further Details
+             
+             Thank You
+            `
+        };
+       await transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log("error==>", error);
+                throw new Error('Error! Please Enter Valid Email Address');
+            } else {
+
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+
+    } catch (error) {
+
+        throw new Error(error);
+    }
     if (!Record) {
         throw new Error('Error! Utilities Cannot be added');
     }
