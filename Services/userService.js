@@ -298,18 +298,16 @@ exports.DeleteSocialMediaAccount = catchAsync(async (req, res, next) => {
     const index = User[0].SocialMedia.findIndex((x) => x.Title == req.body.Title);
     console.log('index', index);
     if (index > -1) {
-      //   User[0].SocialMedia.splice(index, 1);
-      //   await User[0].save();
-      //   let Data = User[0];
-      const Data = await userModel.findOneAndUpdate(
+         User[0].SocialMedia.splice(index, 1);
+         console.log(User[0])
+        // await User[0].save();
+        // let Data = User[0];
+      await userModel.findOneAndUpdate(
         { Email: req.body.Email },
-        { $slice: { SocialMedia: index } },
-        {
-          new: true,
-          useFindAndModify: false,
-        },
+        { SocialMedia: User[0].SocialMedia  },
+       
       );
-
+      const Data = await userModel.findOne({ Email: req.body.Email });
       return res.status(200).json({
         success: true,
         message: 'Social Media Account Deleted Successfully',
