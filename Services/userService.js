@@ -303,7 +303,7 @@ exports.DeleteSocialMediaAccount = catchAsync(async (req, res, next) => {
       //   let Data = User[0];
       const Data = await userModel.findOneAndUpdate(
         { Email: req.body.Email },
-        { $pop: { SocialMedia: { Title: req.body.Title } } },
+        { $pop: { SocialMedia: index } },
         {
           new: true,
           useFindAndModify: false,
