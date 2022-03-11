@@ -244,7 +244,7 @@ exports.AddSocialMediaAccount = catchAsync(async (req, res, next) => {
       };
       const Data = await userModel.findOneAndUpdate(
         { Email: req.body.Email },
-        { $push: { Filling: newObject } },
+        { $push: { SocialMedia: newObject } },
         {
           new: true,
           useFindAndModify: false,
@@ -303,7 +303,7 @@ exports.DeleteSocialMediaAccount = catchAsync(async (req, res, next) => {
       //   let Data = User[0];
       const Data = await userModel.findOneAndUpdate(
         { Email: req.body.Email },
-        { $pop: { Filling: { Title: req.body.Title } } },
+        { $pop: { SocialMedia: { Title: req.body.Title } } },
         {
           new: true,
           useFindAndModify: false,
