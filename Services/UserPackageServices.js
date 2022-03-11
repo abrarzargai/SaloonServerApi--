@@ -3,7 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
 const nodemailer = require("nodemailer");
-const ImgBase = 'https://odl-saloonwizz-app.herokuapp.com/images/'
+const ImgBase = 'https://odl-saloonwizz-app.herokuapp.com/images/';
 /***************Services************/
 
 exports.Add = catchAsync(async (req, res, next) => {
