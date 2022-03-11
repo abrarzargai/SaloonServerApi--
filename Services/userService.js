@@ -222,34 +222,47 @@ exports.Getoneuser = catchAsync(async (req, res, next) => {
     }
 })
 
+
 exports.AddSocialMediaAccount = catchAsync(async (req, res, next) => {
-
-    const User = await userModel.find({ Email: req.body.Email })
-    if (User[0]) {
-        console.log("req.body", req.body)
-        const index = User[0].SocialMedia.find((x) => x.Title == req.body.Title)
-        console.log("index", index)
-        if (!index) {
-            User[0].SocialMedia.push({
-                Title: req.body.Title,
-                URL: req.body.URL,
-            })
-            await User[0].save()
-            let Data = User[0]
-            return res.status(200).json({
-                success: true, message: "Social Media Account Added Successfully", Data
-            })
-        }
-        throw new Error(`Error!  You Have Already added ${req.body.Title} Link  `);
-
-
+  const User = await userModel.find({ Email: req.body.Email });
+  if (User[0]) {
+    console.log('req.body', req.body);
+    const index = User[0].SocialMedia.find((x) => x.Title == req.body.Title);
+    console.log('index', index);
+    if (!index) {
+      //   User[0].SocialMedia.push({
+      //     Title: req.body.Title,
+      //     URL: req.body.URL,
+      //   });
+      //   await User[0].save();
+      //   let Data = User[0];
+      let Id = uuidv4();
+      const newObject = {
+        Id: Id,
+        Title: req.body.Title,
+        URL: req.body.URL,
+      };
+      const Data = await userModel.findOneAndUpdate(
+        { Email: req.body.Email },
+        { $push: { Filling: newObject } },
+        {
+          new: true,
+          useFindAndModify: false,
+        },
+      );
+      console.log(filingsave);
+      return res.status(200).json({
+        success: true,
+        message: 'Social Media Account Added Successfully',
+        Data,
+      });
     }
-    else {
-        return next(new Error('User with this Email Not Found'))
+    throw new Error(`Error!  You Have Already added ${req.body.Title} Link  `);
+  } else {
+    return next(new Error('User with this Email Not Found'));
+  }
+});
 
-    }
-
-})
 
 
 exports.UpdateSocialMediaAccount = catchAsync(async (req, res, next) => {
