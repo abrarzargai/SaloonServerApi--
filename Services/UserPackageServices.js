@@ -41,7 +41,7 @@ exports.Add = catchAsync(async (req, res, next) => {
             subject: 'SaloonWiz App PackageApplied',
             text: `
             
-            User {Data[0].User.FirstName} Applied for package!
+            User ${Data[0].User[0].FirstName || ''} Applied for package!
              Name : ${Data[0].User[0].FirstName || 'not available'}
              Email : ${Data[0].User[0].Email || || 'not available'}
              ContactNumber : ${Data[0].User[0].ContactNumber || || 'not available'}
