@@ -1,88 +1,131 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions, Repository, UpdateResult } from 'typeorm';
-import { v4 as uuid } from 'uuid';
-import { projectLanguage } from '../project/entities/project-language.entity';
-import { TranslationService } from '../translation/translation.service';
-import { CreateWhatsnewDto } from './dto/create-whatsnew.dto';
-import { TranslateWhatsNewDto } from './dto/translation-whatsnew.dto';
-import { UpdateWhatsnewDto } from './dto/update-whatsnew.dto';
-import { Whatsnew } from './entities/whatsnew.entity';
+const UserServicesModel = require('../models/UserServices');
+const catchAsync = require('../utils/catchAsync');
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
+const nodemailer = require("nodemailer");
+const ImgBase = 'https://odl-saloonwizz-app.herokuapp.com/images/'
+/***************Services************/
 
-@Injectable()
-export class WhatsnewService {
-  constructor(
-    @InjectRepository(Whatsnew) private whatsnewEntity: Repository<Whatsnew>,
-    @InjectRepository(projectLanguage) private projectLanguageEntity: Repository<projectLanguage>,
-    private readonly translationService: TranslationService,
-  ) {}
-  async create(createWhatsnewDto: CreateWhatsnewDto): Promise<Whatsnew> {
-    const { projectId } = await this.projectLanguageEntity.findOne({ id: createWhatsnewDto.projectLanguageId });
-    console.log('Project', projectId);
-    const response = await this.findOne({
-      relations: ['projectLanguage'],
-      where: { projectLanguage: { projectId: projectId }, appVersion: createWhatsnewDto.appVersion },
-    });
-    if (!response) {
-      return this.whatsnewEntity.save(createWhatsnewDto);
-    } else {
-      throw new HttpException(
-        `version ${createWhatsnewDto.appVersion} is already exist for this project`,
-        HttpStatus.BAD_REQUEST,
-      );
+exports.Add = catchAsync(async (req, res, next) => {
+
+
+    const Record = await UserServicesModel.create({...req.body})
+        const Data = await UserServicesModel.aggregate([
+              {
+            $match: {
+                User: ObjectId(req.body.User)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",       // other table name
+                localField: "User",   // name of users table field
+                foreignField: "_id", // name of userinfo table field
+                as: "User"         // alias for userinfo table
+            }
+        }
+    ])
+    console.log(Data)
+    /**EMAIL***/
+    try {
+        var transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            auth: {
+                user: 'odl.saloonwizz@gmail.com',
+                pass: 'odl.saloonwizz@123'
+            },
+        });
+
+        var mailOptions = {
+            from: 'odl.saloonwizz@gmail.com',
+            to: 'odl.saloonwizz@gmail.com',
+            subject: 'SaloonWiz App PackageApplied',
+            text: `
+            
+            User ${Data[0].User[0].FirstName} Applied for package!
+             Name : ${Data[0].User[0].FirstName || 'not available'}
+             Email : ${Data[0].User[0].Email || 'not available'} 
+             ContactNumber : ${Data[0].User[0].ContactNumber || 'not available'}
+             
+             Please contact him for further Details
+             
+             Thank You
+            `
+        };
+       await transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log("error==>", error);
+                throw new Error('Error! Please Enter Valid Email Address');
+            } else {
+
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+
+    } catch (error) {
+
+        throw new Error(error);
     }
-  }
+    if (!Record) {
+        throw new Error('Error! Utilities Cannot be added');
+    }
+    else {
+        return res.status(201).json({
+            success: true, message: "Added", Record,Data
+        })
+    }
 
-  findAll(options: FindManyOptions<Whatsnew>): Promise<Whatsnew[]> {
-    return this.whatsnewEntity.find(options);
-  }
+})
 
-  findOne(options: FindOneOptions<Whatsnew>): Promise<Whatsnew> {
-    return this.whatsnewEntity.findOne(options);
-  }
+exports.Update = catchAsync(async (req, res, next) => {
+    console.log("hit", req.files)
 
-  update(id: string, updateWhatsnewDto: UpdateWhatsnewDto): Promise<UpdateResult> {
-    return this.whatsnewEntity.update(id, updateWhatsnewDto);
-  }
+    const IsFound = await UserServicesModel.findOne({ "_id": req.body.Id })
+    console.log("IsFound", IsFound)
+    if (!IsFound) {
+        throw new Error('Error! User have not applied for this Utility');
+    }
 
-  remove(id: string): Promise<UpdateResult> {
-    return this.whatsnewEntity.softDelete(id);
-  }
+    console.log("data")
 
-  async translate(translatewhatsnewDto: TranslateWhatsNewDto): Promise<Whatsnew> {
-    //geting stroelisting description and from language code
-    const { description, projectLanguage, appVersion } = await this.findOne({
-      where: { id: translatewhatsnewDto.whatsNewId },
-      relations: ['projectLanguage', 'projectLanguage.language', 'projectLanguage.project'],
-    });
-    console.log('Description :', description);
-    console.log('ProjectLanguage :', projectLanguage.language.code);
-    //target lanaguage to
-    const { language } = await this.projectLanguageEntity.findOne({
-      relations: ['language'],
-      where: { id: translatewhatsnewDto.projectLanguageId },
-    });
-    console.log('Target Language :', language);
-    //translation Handler
-    const translatedJSON = await this.translationService.translate({
-      text: description,
-      from: projectLanguage.language.code,
-      to: language.code,
-      translationServiceId: projectLanguage.project.translationServiceId,
-    });
-    //if all ready translated just update it
-    const saveData: UpdateWhatsnewDto = {
-      description: translatedJSON.translated_text[language.code],
-      executedById: translatewhatsnewDto.executedById,
-      projectLanguageId: translatewhatsnewDto.projectLanguageId,
-      appVersion: appVersion,
-    };
+    const Record = await UserServicesModel.updateOne({ "_id": req.body.Id }, {...req.body})
+    if (!Record.nModified > 0) {
+        throw new Error('Error! Cannot be updated');
+    }
+    else {
+        return res.status(201).json({
+            success: true, message: "updated"
+        })
+    }
 
-    const whatsnew = await this.findOne({
-      where: { projectLanguageId: translatewhatsnewDto.projectLanguageId },
-    });
-    if (whatsnew) saveData.id = whatsnew.id;
-    else saveData.id = uuid();
-    return this.whatsnewEntity.save(saveData);
-  }
-}
+})
+
+
+//Getone
+exports.GetAll = catchAsync(async (req, res, next) => {
+
+    const Data = await UserServicesModel.aggregate([
+        {
+            $lookup: {
+                from: "users",       // other table name
+                localField: "User",   // name of users table field
+                foreignField: "_id", // name of userinfo table field
+                as: "User"         // alias for userinfo table
+            }
+        }
+    ])
+    console.log("Data", Data)
+    if (Data[0]) {
+
+        return res.status(200).json({
+            success: true, message: "get", Data
+        })
+
+    }
+    else {
+        return next(new Error(''))
+
+    }
+})
+
