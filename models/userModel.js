@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+   Base: {
+    type: String,
+    default: "form",
+  },
   BusinessAddress: {
     type: String,
     default: null,
