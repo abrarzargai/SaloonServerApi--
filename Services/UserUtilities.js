@@ -341,7 +341,7 @@ exports.AcceptDeal = catchAsync(async (req, res, next) => {
     const User = await UserUtilitiesModel.find({ "_id": req.body.Id })
     if (User[0]) {
         console.log("User[0].DealList", User[0].Deal.Title)
-        if (!User[0].Deal.Title) {
+     //   if (!User[0].Deal.Title) {
             User[0].Deal.Title = req.body.Title;
             User[0].Deal.Description = req.body.Description;
             await User[0].save()
@@ -349,8 +349,8 @@ exports.AcceptDeal = catchAsync(async (req, res, next) => {
             return res.status(200).json({
                 success: true, message: "Deal Accepted Successfully", Data
             })
-        }
-        throw new Error(`Error!  You Have Already Subscribed any other Deal `);
+   //     }
+   //    throw new Error(`Error!  You Have Already Subscribed any other Deal `);
 
 
     }
