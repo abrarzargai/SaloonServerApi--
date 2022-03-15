@@ -368,8 +368,11 @@ exports.DeleteFile = catchAsync(async (req, res, next) => {
         console.log("index", index)
         if (index > -1) {
             User[0].Filling.splice(index, 1)
-            await User[0].save()
-            let Data = User[0]
+            await userModel.findOneAndUpdate(
+                    { Email: req.body.Email },
+                    { Filling: User[0].Filling  },
+                   );
+      const Data = await userModel.findOne({ Email: req.body.Email });
             return res.status(200).json({
                 success: true, message: "File Deleted Successfully", Data
             })
