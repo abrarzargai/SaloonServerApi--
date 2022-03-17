@@ -180,6 +180,8 @@ exports.GetOne = catchAsync(async (req, res, next) => {
   return next(new Error("No Utility Found for this User"));
 });
 //Getone
+
+
 exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
   const Data = await UserUtilitiesModel.aggregate([
     {
@@ -221,11 +223,13 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
             userUtilities.push({
                 Utilities: utilityMap,
                 Missing: missing,
+                UserUtility: Data[index],
             })
           } else {
             Data[index].isActive = "activated";
             active.push({
                 Utilities: utilityMap,
+                UserUtility: Data[index],
                 Missing: missing,
               });
           }
@@ -241,6 +245,7 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
             Data[index].isActive = "Expired";
             expired.push({
                 Utilities: utilityMap,
+                UserUtility: Data[index],
                 Missing: missing,
               });
 
