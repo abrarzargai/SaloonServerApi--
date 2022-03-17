@@ -179,7 +179,8 @@ exports.GetOne = catchAsync(async (req, res, next) => {
 
   return next(new Error("No Utility Found for this User"));
 });
-//Getone
+//Getone------------------
+
 
 
 exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
@@ -199,8 +200,9 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
 
   if (Data[0]) {
     Utilities.map((utilityMap) => {
+        let isActive = "";
       const index = Data.findIndex( (DataMap) => DataMap.Utilities.Title === utilityMap.Title  );
-    
+        
       if (index > -1) {
           //missing check
                      let missing = [];
@@ -219,18 +221,23 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
         //outerdatacheck
         if (!Data[index].ContractExpiryDate) {
           if (missing.length > 0) {
-            Data[index].isActive = "fillform";
+            console.log("fillform hit");
+            isActive = "fillform";
             userUtilities.push({
                 Utilities: utilityMap,
                 Missing: missing,
-                UserUtility: Data[index],
+                isActive
+                // UserUtility: Data[index],
             })
           } else {
-            Data[index].isActive = "activated";
+            console.log("expiry hit");
+            // utilityMap.isActive = "activated";
+            isActive = "activated";
             active.push({
                 Utilities: utilityMap,
-                UserUtility: Data[index],
+                // UserUtility: Data[index],
                 Missing: missing,
+                isActive
               });
           }
         } else {
@@ -242,11 +249,14 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
           );
           if (newdate.toISOString() < date.toISOString()) {
             console.log("expiry hit");
-            Data[index].isActive = "Expired";
+            // utilityMap.isActive = "Expired";
+            isActive = "Expired";
+            
             expired.push({
                 Utilities: utilityMap,
-                UserUtility: Data[index],
+                // UserUtility: Data[index],
                 Missing: missing,
+                isActive
               });
 
           }
@@ -274,6 +284,12 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
     });
   }
 });
+
+
+
+
+
+
 
 //Getone
 exports.GetAll = catchAsync(async (req, res, next) => {
