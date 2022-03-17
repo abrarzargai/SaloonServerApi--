@@ -200,10 +200,13 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
 
   if (Data[0]) {
     Utilities.map((utilityMap) => {
+       
         let isActive = "";
       const index = Data.findIndex( (DataMap) => DataMap.Utilities.Title === utilityMap.Title  );
         
       if (index > -1) {
+        console.log("utilityMap",utilityMap)
+        console.log("Data[index]",Data[index])
           //missing check
                      let missing = [];
                     if (!Data[index].IsPaid) {
@@ -218,8 +221,8 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
                     if (!Data[index].LOAForm) {
                     missing.push("LOAForm");
                     }
-        //outerdatacheck
-        if (!Data[index].ContractExpiryDate) {
+     
+                    //if something iss missing
           if (missing.length > 0) {
             console.log("fillform hit");
             isActive = "fillform";
@@ -229,42 +232,43 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
                 isActive
                 // UserUtility: Data[index],
             })
+            //nothing is missing
           } else {
-            console.log("expiry hit");
-            // utilityMap.isActive = "activated";
+            let date = new Date(Data[index].ContractExpiryDate || "");
+            var newdate = new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 2,
+              new Date().getDate()
+            );
+            if (newdate.toISOString() < date.toISOString()) {
+                console.log("expiry hit");
+                // utilityMap.isActive = "Expired";
+                isActive = "Expired";
+                
+                expired.push({
+                    Utilities: utilityMap,
+                    Missing: missing,
+                    isActive
+                  });
+    
+              }else{
+           
             isActive = "activated";
             active.push({
                 Utilities: utilityMap,
-                // UserUtility: Data[index],
                 Missing: missing,
                 isActive
               });
+            }
           }
-        } else {
-          let date = new Date(Data[index].ContractExpiryDate || "");
-          var newdate = new Date(
-            new Date().getFullYear(),
-            new Date().getMonth() + 2,
-            new Date().getDate()
-          );
-          if (newdate.toISOString() < date.toISOString()) {
-            console.log("expiry hit");
-            // utilityMap.isActive = "Expired";
-            isActive = "Expired";
-            
-            expired.push({
-                Utilities: utilityMap,
-                // UserUtility: Data[index],
-                Missing: missing,
-                isActive
-              });
-
-          }
+         
+        
         } //inner loop
 
        
-      } 
+      
     });
+
     return res.status(200).json({
         success: true,
         message: "Utility Found for this User",
