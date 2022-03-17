@@ -228,6 +228,7 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
             isActive = "fillform";
             userUtilities.push({
                 Utilities: utilityMap,
+                userUtility:Data[index],
                 Missing: missing,
                 isActive
                 // UserUtility: Data[index],
@@ -248,6 +249,7 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
                 expired.push({
                     Utilities: utilityMap,
                     Missing: missing,
+                    userUtility:Data[index],
                     isActive
                   });
     
@@ -257,6 +259,7 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
             active.push({
                 Utilities: utilityMap,
                 Missing: missing,
+                userUtility:Data[index],
                 isActive
               });
             }
@@ -288,8 +291,6 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
     });
   }
 });
-
-
 
 
 
