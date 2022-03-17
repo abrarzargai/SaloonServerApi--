@@ -252,6 +252,13 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
                     userUtility:Data[index],
                     isActive
                   });
+                  userUtilities.push({
+                    Utilities: utilityMap,
+                    userUtility:Data[index],
+                    Missing: missing,
+                    isActive
+                    // UserUtility: Data[index],
+                })
     
               }else{
            
@@ -262,6 +269,13 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
                 userUtility:Data[index],
                 isActive
               });
+              userUtilities.push({
+                Utilities: utilityMap,
+                userUtility:Data[index],
+                Missing: missing,
+                isActive
+                // UserUtility: Data[index],
+            })
             }
           }
          
@@ -291,6 +305,7 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
     });
   }
 });
+
 
 
 
