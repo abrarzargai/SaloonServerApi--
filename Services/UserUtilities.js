@@ -135,9 +135,6 @@ exports.GetOne = catchAsync(async (req, res, next) => {
     console.log(index);
     if (index > -1) {
       let missing = [];
-      if (!Data[index].IsPaid) {
-        missing.push("IsPaid");
-      }
       if (!Data[index].ContractExpiryDate) {
         missing.push("ContractExpiryDate");
       }
@@ -209,9 +206,6 @@ exports.getUtilitiesOfOneUser = catchAsync(async (req, res, next) => {
         console.log("Data[index]",Data[index])
           //missing check
                      let missing = [];
-                    if (!Data[index].IsPaid) {
-                    missing.push("IsPaid");
-                    }
                     if (!Data[index].ContractExpiryDate) {
                     missing.push("ContractExpiryDate");
                     }
