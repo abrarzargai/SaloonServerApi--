@@ -18,6 +18,9 @@ const UserUtilitiesSchema = new mongoose.Schema({
     IsPaid: {
         type: Boolean,
     },
+    Request: {
+        type: Boolean,
+    },
     LOAForm: {
         type: String,
     },
